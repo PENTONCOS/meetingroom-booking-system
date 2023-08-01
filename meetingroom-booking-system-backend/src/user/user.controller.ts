@@ -14,8 +14,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
-  
+  constructor(private readonly userService: UserService) { }
+
   @Inject(EmailService)
   private emailService: EmailService;
 
@@ -24,7 +24,7 @@ export class UserController {
 
   @Get('register-captcha')
   async captcha(@Query('address') address: string) {
-    const code = Math.random().toString().slice(2,8);
+    const code = Math.random().toString().slice(2, 8);
 
     await this.redisService.set(`captcha_${address}`, code, 5 * 60);
 
@@ -41,7 +41,7 @@ export class UserController {
     return await this.userService.register(registerUser);
   }
 
-  @Get("init-data") 
+  @Get("init-data")
   async initData() {
     await this.userService.initData();
     return 'done';
@@ -56,7 +56,7 @@ export class UserController {
   @Post('login')
   async userLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, false);
-  
+
     vo.accessToken = this.jwtService.sign({
       userId: vo.userInfo.id,
       username: vo.userInfo.username,
@@ -78,7 +78,7 @@ export class UserController {
   @Post('admin/login')
   async adminLogin(@Body() loginUser: LoginUserDto) {
     const vo = await this.userService.login(loginUser, true);
-    
+
     vo.accessToken = this.jwtService.sign({
       userId: vo.userInfo.id,
       username: vo.userInfo.username,
@@ -123,7 +123,7 @@ export class UserController {
         access_token,
         refresh_token
       }
-    } catch(e) {
+    } catch (e) {
       throw new UnauthorizedException('token 已失效，请重新登录');
     }
   }
@@ -154,7 +154,7 @@ export class UserController {
         access_token,
         refresh_token
       }
-    } catch(e) {
+    } catch (e) {
       throw new UnauthorizedException('token 已失效，请重新登录');
     }
   }
@@ -162,19 +162,19 @@ export class UserController {
   @Get('info')
   @RequireLogin()
   async info(@UserInfo('userId') userId: number) {
-      const user = await this.userService.findUserDetailById(userId);
+    const user = await this.userService.findUserDetailById(userId);
 
-      const vo = new UserDetailVo();
-      vo.id = user.id;
-      vo.email = user.email;
-      vo.username = user.username;
-      vo.headPic = user.headPic;
-      vo.phoneNumber = user.phoneNumber;
-      vo.nickName = user.nickName;
-      vo.createTime = user.createTime;
-      vo.isFrozen = user.isFrozen;
+    const vo = new UserDetailVo();
+    vo.id = user.id;
+    vo.email = user.email;
+    vo.username = user.username;
+    vo.headPic = user.headPic;
+    vo.phoneNumber = user.phoneNumber;
+    vo.nickName = user.nickName;
+    vo.createTime = user.createTime;
+    vo.isFrozen = user.isFrozen;
 
-      return vo;
+    return vo;
   }
 
   @Post(['update_password', 'admin/update_password'])
@@ -185,7 +185,7 @@ export class UserController {
 
   @Get('update_password/captcha')
   async updatePasswordCaptcha(@Query('address') address: string) {
-    const code = Math.random().toString().slice(2,8);
+    const code = Math.random().toString().slice(2, 8);
 
     await this.redisService.set(`update_password_captcha_${address}`, code, 10 * 60);
 
@@ -200,12 +200,12 @@ export class UserController {
   @Post(['update', 'admin/update'])
   @RequireLogin()
   async update(@UserInfo('userId') userId: number, @Body() updateUserDto: UpdateUserDto) {
-    return await this.userService.update(userId, updateUserDto); 
+    return await this.userService.update(userId, updateUserDto);
   }
 
   @Get('update/captcha')
   async updateCaptcha(@Query('address') address: string) {
-    const code = Math.random().toString().slice(2,8);
+    const code = Math.random().toString().slice(2, 8);
 
     await this.redisService.set(`update_user_captcha_${address}`, code, 10 * 60);
 
