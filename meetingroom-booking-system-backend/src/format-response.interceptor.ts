@@ -7,6 +7,7 @@ export class FormatResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const response = context.switchToHttp().getResponse<Response>();
 
+    // 格式化成功后的响应
     return next.handle().pipe(map((data) => {
       return {
         code: response.statusCode,
